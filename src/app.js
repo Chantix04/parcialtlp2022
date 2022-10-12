@@ -8,8 +8,7 @@ const path = require('path');
 const conectarBD = require('../databases/connection');
 
 require('dotenv').config();
-require('ejs');
-require('../databases/connection');
+// require('ejs');
 
 //Se inicializa la librería express
 
@@ -32,7 +31,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 //RUTAS
 
 app.use(require('./routes/users.routes'));
-app.use(require('./routes/tasks.routes'));
+// app.use(require('./routes/tasks.routes'));
 app.use(require('./routes/auth.routes'));
 
 //TEMPLATE ENGINE
