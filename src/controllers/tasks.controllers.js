@@ -15,7 +15,8 @@ ctrlTasks.postTasks = async (req, res) => {
 }
 
     ctrlTasks.getTasks = async (req, res) =>{
-        const obtenerTask = await Tasks.find({userId:req.user._id})
+        
+        const obtenerTask = await Tasks.find({userId:req.user._id, isActive:true,isDone:false})
         res.json(obtenerTask)
     }
 
@@ -34,14 +35,39 @@ ctrlTasks.postTasks = async (req, res) => {
     } 
 
     ctrlTasks.deleteTasks =  async (req,res) =>{
+
         const id = req.params.id;
-        const {title,description} = req.body
-        const eliminarTarea = await Tasks.deleteOne({_id:id,userId:req.user._id})
+        try {
+
+            const eliminarTarea = await Tasks.findByIdAndUpdate({_id:id,userId:req.user._id},{isActive:false})
     
-        res.json(eliminarTarea + "tarea eliminada")
+            res.json(eliminarTarea + "Tarea eliminada correctamente.")
+
+        } catch (error) {
+            console.log(error.message);
+            return res.status(500).json({
+                msg:"Error al eliminar la tarea."
+            })
+        }
     }
     
-    
+    ctrlTasks.completeTasks =  async (req,res) =>{
+        const {id} = req.params;
+        const {_id} = req.user
+        try {
+            
+            const completeTask = await Tasks.findByIdAndUpdate({_id:id,userId:_id},{isDone:true})
+            res.json("Tarea marcada como completada.")
+
+        } catch (error) {
+
+            console.log(error.message);
+            return res.status(500).json({
+                msg:"Error al marcar la tarea como completada"
+            })
+
+        }
+    }
 
 module.exports = ctrlTasks;
 
