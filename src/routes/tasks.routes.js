@@ -1,16 +1,15 @@
-const router = require('express').Router();
-const { createTask, getTasks } = require('../controllers/task.controllers');
+const routerTasks = require('express').Router();
+const validarJWT = require('../middlewares/validar-jwt')
+const {
+    getTasks,
+    postTasks,
+    putTasks,
+    deleteTasks
+} = require('../controllers/tasks.controllers');
 
-const validarJWT = require('../middlewares/validar-jwt');
+routerTasks.get('/tasks', validarJWT ,getTasks)
+routerTasks.post('/tasks', validarJWT ,postTasks)
+routerTasks.put('/tasks/:id', validarJWT ,putTasks)
+routerTasks.delete('/tasks/:id', validarJWT ,deleteTasks)
 
-// Crear nueva tarea
-router.post('/task', [
-    validarJWT,
-], createTask);
-
-
-router.get('/task', [
-    validarJWT
-], getTasks);
-
-module.exports = router;
+module.exports = routerTasks;

@@ -8,10 +8,10 @@ const {
     deleteUsers
 } = require('../controllers/users.controllers');
 
-router.get('/users', [validarJWT], getUsers);
-router.post('/users',[],postUsers);
-router.put('/users/:id', [validarJWT], putUsers);
-router.delete('/users/:id', [validarJWT] , deleteUsers);
+router.get('/users', validarJWT, getUsers);
+router.post('/users',postUsers);
+router.put('/users/:id', validarJWT, putUsers);
+router.delete('/users/:id', validarJWT , deleteUsers);
 
 
 

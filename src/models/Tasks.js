@@ -25,4 +25,11 @@ const TaskSchema = new Schema({
     ]
 });
 
+TaskSchema.methods.toJSON = function() {
+    const {_id, ...task } = this.toObject();
+    task.uid = _id;
+
+    return task;
+}
+
 module.exports = model('Tasks', TaskSchema);

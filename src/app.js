@@ -31,7 +31,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 //RUTAS
 
 app.use(require('./routes/users.routes'));
-// app.use(require('./routes/tasks.routes'));
+app.use(require('./routes/tasks.routes'));
 app.use(require('./routes/auth.routes'));
 
 //TEMPLATE ENGINE

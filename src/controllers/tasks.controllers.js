@@ -1,36 +1,47 @@
 const Tasks = require('../models/Tasks');
-ctrlTask = {};
+ctrlTasks = {};
 
+ctrlTasks.postTasks = async (req, res) => {
+    const { title, description, categories } = req.body;
 
-ctrlTask.createTask = async (req, res) => {
-    const { title, description } = req.body;
-
-    const task = new Tasks({
+    const newTask = new Tasks({
         title,
         description,
-        userId: req.user._id
+        categories,
+        userId:req.user._id
     });
+    await newTask.save()
+   res.json("tarea creada")
+}
 
-
-    try {
-        const newTask = await task.save();
-
-        return res.json({
-            msg: 'Tarea creada correctamente',
-            newTask
-        })
-    } catch (error) {
-        return res.status(500).json({
-            msg:'Error al crear la tarea'
-        })
+    ctrlTasks.getTasks = async (req, res) =>{
+        const obtenerTask = await Tasks.find({userId:req.user._id})
+        res.json(obtenerTask)
     }
-}
 
-ctrlTask.getTasks = async (req, res) => {
-    const tasks = await Tasks.find({ userId: req.user._id })
-    .populate('userId', ['username','email'])
-    return res.json(tasks);
-}
+    ctrlTasks.putTasks = async (req, res) =>{
+        const id = req.params.id
+        const {title, description} = req.body 
+        const actualizarTarea = await Tasks.updateOne({_id:id,userId:req.user._id},{
+            
+            $set: {
+                title, description
+            }
+        });
+        res.json("tarea actualizada")
+    
 
+    } 
 
-module.exports = ctrlTask;
+    ctrlTasks.deleteTasks =  async (req,res) =>{
+        const id = req.params.id;
+        const {title,description} = req.body
+        const eliminarTarea = await Tasks.deleteOne({_id:id,userId:req.user._id})
+    
+        res.json(eliminarTarea + "tarea eliminada")
+    }
+    
+    
+
+module.exports = ctrlTasks;
+

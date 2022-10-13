@@ -4,7 +4,7 @@ const ctrlUser = {};
 
 ctrlUser.getUsers = async (req,res)=>{
     try {
-        const users = await User.find()
+        const users = await User.find({isActive:true})
     return res.json({
         msg: 'GET - getUsers',
         users
@@ -20,10 +20,10 @@ ctrlUser.getUsers = async (req,res)=>{
 //CONTROLADOR PARA CREAR UN NUEVO USUARIO 
 ctrlUser.postUsers = async (req,res)=>{
     //SE DESESTRUCTURAN LOS DATOS 
-    const { username,email, password:passwordRecibida,role, ...otrosDatos} = req.body;
+    const { username,email, password,role} = req.body;
     //ENCRIPTAMOS LA CONTRASEÑA DEL USUARIO
 
-    const newPassword = bcrypt.hashSync(passwordRecibida, 10)
+    const newPassword = bcrypt.hashSync(password, 10)
 
     //SE CREA UN NUEVO USUARIO 
     const nuevoUsuario = new User({
@@ -33,13 +33,10 @@ ctrlUser.postUsers = async (req,res)=>{
         role
     });
 
-    try {
-        const usuario = await nuevoUsuario.save();
+        const guardarusuario = await nuevoUsuario.save();
         //RESPUESTA DEL SERVIDOR
-        return res.json('El usuario ha sido guardado con éxito.');
-    } catch (error) {
-        console.log(error)
-    }
+        res.json(guardarusuario);
+    
 }
 
 ctrlUser.putUsers = async (req,res) =>{
@@ -67,7 +64,6 @@ ctrlUser.putUsers = async (req,res) =>{
         })
     }
 }
- //CONTROLADOR PARA BORRAR UN USUARIO (ELIMINACIÓN LÓGICA)
 ctrlUser.deleteUsers = async(req,res) => {
     const id = req.params.id 
     try {
