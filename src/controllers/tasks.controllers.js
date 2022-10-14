@@ -2,16 +2,26 @@ const Tasks = require('../models/Tasks');
 ctrlTasks = {};
 
 ctrlTasks.postTasks = async (req, res) => {
+
     const { title, description, categories } = req.body;
 
-    const newTask = new Tasks({
-        title,
-        description,
-        categories,
-        userId:req.user._id
-    });
-    await newTask.save()
-   res.json("tarea creada")
+    try { 
+
+        const newTask = new Tasks({
+            title,
+            description,
+            categories,
+            userId:req.user._id
+        });
+        await newTask.save()
+       res.json("tarea creada")
+        
+    } catch (error) {
+        console.log(error)
+        res.status(500).json({
+            msg: 'Error al crear la tarea'
+        })
+    }
 }
 
     ctrlTasks.getTasks = async (req, res) =>{
@@ -23,16 +33,30 @@ ctrlTasks.postTasks = async (req, res) => {
     ctrlTasks.putTasks = async (req, res) =>{
         const id = req.params.id
         const {title, description} = req.body 
-        const actualizarTarea = await Tasks.updateOne({_id:id,userId:req.user._id},{
+        
+        if (!id || !title || !description ){
+            return res.status(400).json({
+                msg: 'No viene id en la petición'
+            })
+        }
+        try {
             
-            $set: {
-                title, description
+            const actualizarTarea = await Tasks.findByIdAndUpdate (id,{title,description});
+            if (actualizarTarea===null){
+                return res.status(400).json({
+                    msg:'Error al actualizar la tarea - id incorrecto.'
+                })
             }
-        });
-        res.json("tarea actualizada")
-    
+            return res.json("tarea actualizada")
 
-    } 
+        } catch (error) {
+            console.log(error)
+            return res.status(500).json({
+                msg:'Error al actualizar la tarea'
+            })
+        }
+
+    }     
 
     ctrlTasks.deleteTasks =  async (req,res) =>{
 
@@ -52,20 +76,27 @@ ctrlTasks.postTasks = async (req, res) => {
     }
     
     ctrlTasks.completeTasks =  async (req,res) =>{
-        const {id} = req.params;
-        const {_id} = req.user
+        const id = req.params.id;
+        const { title, description, ...otroDatos } = req.body;
+    
         try {
-            
-            const completeTask = await Tasks.findByIdAndUpdate({_id:id,userId:_id},{isDone:true})
+    
+            const taskCompleted = await Tasks.findByIdAndUpdate(id, { title, description,isDone:true})
+            if (taskCompleted === null){
+                return res.status(400).json({
+                    msg:'Error al completar la tarea - id incorrecto.'
+                })
+            }
             res.json("Tarea marcada como completada.")
-
+    
         } catch (error) {
-
+    
             console.log(error.message);
             return res.status(500).json({
                 msg:"Error al marcar la tarea como completada"
-            })
 
+            })
+    
         }
     }
 

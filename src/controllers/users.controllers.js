@@ -25,17 +25,26 @@ ctrlUser.postUsers = async (req,res)=>{
 
     const newPassword = bcrypt.hashSync(password, 10)
 
-    //SE CREA UN NUEVO USUARIO 
-    const nuevoUsuario = new User({
-        username,
-        password: newPassword,
-        email,
-        role
-    });
+    try {
+        
+        //SE CREA UN NUEVO USUARIO 
+        const nuevoUsuario = new User({
+            username,
+            password: newPassword,
+            email,
+            role
+        });
+    
+            const guardarusuario = await nuevoUsuario.save();
+            //RESPUESTA DEL SERVIDOR
+            res.json(guardarusuario);
 
-        const guardarusuario = await nuevoUsuario.save();
-        //RESPUESTA DEL SERVIDOR
-        res.json(guardarusuario);
+    } catch (error) {
+        console.log(error)
+        res.status(500).json({
+            msg:'Error al crear el usuario'
+        })
+    }
     
 }
 
@@ -45,14 +54,12 @@ ctrlUser.putUsers = async (req,res) =>{
     const id = req.params.id;
     const { username, email, password,role, ...otrosDatos } = req.body;
 
-    if (!id || !username || !email || !password || !role) {
-        return res.status(400).json({
-            msg: "No viene id en la petición."
-        });
-    };
+
+
+    const newPassword = bcrypt.hashSync(password, 10);
 
     try {
-        const userActualizado = await User.findByIdAndUpdate(id,{username,email,password,role})
+        const userActualizado = await User.findByIdAndUpdate(id,{username,email,password:newPassword,role})
         return res.json({
             msg: 'Usuario actualizado correctamente'
         });

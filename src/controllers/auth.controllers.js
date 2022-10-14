@@ -16,14 +16,14 @@ ctrlAuth.iniciarSesion = async (req, res) => {
         if (!user) {
             return res.status(400).json({
                 ok: false,
-                msg: 'Error al autenticarse' - 'Usuario no encontrado'
+                msg: 'Error al autenticarse - Usuario no encontrado'
             });
         }
 
         if (!user.isActive) {
             return res.status(400).json({
                 ok: false,
-                msg: 'Error al autenticarse' - 'Usuario inactivo'
+                msg: 'Error al autenticarse - Usuario inactivo'
             });
         }
 
@@ -33,7 +33,7 @@ ctrlAuth.iniciarSesion = async (req, res) => {
         if (!validPassword) {
             return res.status(400).json({
                 ok: false,
-                msg: 'Error al autenticarse' - 'Contraseña incorrecta'
+                msg: 'Error al autenticarse - Contraseña incorrecta'
             });
         }
 
@@ -42,7 +42,10 @@ ctrlAuth.iniciarSesion = async (req, res) => {
 
         return res.json({ token });
     } catch (error) {
-        return res.json({ msg: 'Error al iniciar sesión' });
+        console.log(error)
+        res.status(400).json({
+            msg: 'Error al iniciar sesión.'
+        })
     }
 };
 
