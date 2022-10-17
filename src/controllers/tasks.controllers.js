@@ -1,3 +1,4 @@
+const { findOne } = require('../models/Tasks');
 const Tasks = require('../models/Tasks');
 ctrlTasks = {};
 
@@ -34,13 +35,19 @@ ctrlTasks.postTasks = async (req, res) => {
         const id = req.params.id
         const {title, description} = req.body 
         
+    
         if (!id || !title || !description ){
             return res.status(400).json({
                 msg: 'No viene id en la petición'
             })
         }
         try {
-            
+            const idcomparada = await Tasks.findOne({_id:id,userId:req.user._id})
+            if (!idcomparada) {
+                return res.status(401).json({
+                    msg: 'Error al actualizar la tarea - No autorizado'
+                })
+            }        
             const actualizarTarea = await Tasks.findByIdAndUpdate (id,{title,description});
             if (actualizarTarea===null){
                 return res.status(400).json({
